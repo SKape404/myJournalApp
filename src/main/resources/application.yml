@@ -1,14 +1,3 @@
 spring:
-  data:
-    mongodb:
-      uri: mongodb+srv://prabhavsingh404_db_user:yRWpYaY8ScNyx0rU@cluster0.e9e7nz8.mongodb.net/?appName=Cluster0
-      database: journaldb
-      auto-index-creation: true
-      #host: localhost
-      #port: 27017
-      #username: myjournaluser
-      #password: mypassword
-
-server:
-  port: 8080
-
+  profiles:
+    active: dev
