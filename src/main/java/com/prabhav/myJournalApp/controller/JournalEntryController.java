@@ -50,9 +50,9 @@ public class JournalEntryController {
     public ResponseEntity<?> getJournalEntryById(@PathVariable ObjectId myId) {
         User user = userService.findByUserName(SecurityContextHolder.getContext().getAuthentication().getName());
         List<JournalEntry> myIdEntry = user.getJournalEntries().stream().filter(x -> x.getId().equals(myId)).toList();
-        if(!myIdEntry.isEmpty()) {
+        if (!myIdEntry.isEmpty()) {
             Optional<JournalEntry> journalEntry = journalEntryService.findById(myId);
-            if(journalEntry.isPresent()) {
+            if (journalEntry.isPresent()) {
                 return new ResponseEntity<>(journalEntry.get(), HttpStatus.OK);
             }
         }
@@ -63,7 +63,7 @@ public class JournalEntryController {
     public ResponseEntity<?> deleteJournalEntryById(@PathVariable ObjectId myId) {
         boolean removed = journalEntryService.deleteById(myId, SecurityContextHolder.getContext().getAuthentication().getName());
 
-        if(removed) {
+        if (removed) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

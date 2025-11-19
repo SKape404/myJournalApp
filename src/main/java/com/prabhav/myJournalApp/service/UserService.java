@@ -18,10 +18,9 @@ import java.util.Optional;
 @Slf4j
 public class UserService {
 
+    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     @Autowired
     private UserRepository userRepository;
-
-    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public void saveUser(User user) {
         try {
@@ -34,7 +33,7 @@ public class UserService {
     public boolean saveNewUser(User user) {
         try {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setRoles(Arrays.asList("USER"));
+            user.setRoles(List.of("USER"));
             userRepository.save(user);
             return true;
         } catch (Exception e) {
