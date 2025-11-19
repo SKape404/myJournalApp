@@ -1,24 +1,40 @@
 package com.prabhav.myJournalApp.service;
 
 import com.prabhav.myJournalApp.api.response.WeatherResponse;
+import com.prabhav.myJournalApp.cache.AppCache;
+import com.prabhav.myJournalApp.constants.PlaceHolders;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-@Component
+@Service
 public class WeatherService {
 
-    private static final String apiKey = "9afc859359cb3aba97514e067c616830";
+    @Value("${weather.api.key}")
+    private String apiKey;
 
-    private static final String API = "http://api.weatherstack.com/current?access_key=API_KEY&query=CITY";
+    @Autowired
+    private AppCache appCache;
 
     @Autowired
     private RestTemplate restTemplate;
 
     public WeatherResponse getWeather(String city) {
-        String finalAPI = API.replace("CITY", city).replace("API_KEY", apiKey);
+        String finalAPI = appCache.appCache.get(AppCache.keys.WEATHER_API.toString()).replace(PlaceHolders.CITY, city).replace(PlaceHolders.API_KEY, apiKey);
+
+//        External POST request to RequestEntity for Frontend
+//        HttpHeaders httpHeaders = new HttpHeaders();
+//        httpHeaders.set("key", "value");
+//
+//        User user = User.builder().userName("Priyanshi").password("Priyanshi").build();
+//        HttpEntity<User> httpEntity = new HttpEntity<>(user, httpHeaders);
+//
+//        ResponseEntity<WeatherResponse> postResponse = restTemplate.exchange(finalAPI, HttpMethod.POST, httpEntity, WeatherResponse.class);
+//
+
         ResponseEntity<WeatherResponse> response = restTemplate.exchange(finalAPI, HttpMethod.GET, null, WeatherResponse.class);
         return response.getBody();
     }
