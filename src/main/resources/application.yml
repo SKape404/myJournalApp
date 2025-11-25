@@ -1,6 +1,18 @@
 spring:
   profiles:
     active: dev
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: prabhavsingh404@gmail.com
+    password: sotc unch kjqd sztb
+    properties:
+      mail:
+        smtp:
+          auth: true
+          #(start transport layer security)
+          starttls:
+            enable: true
 
 logging:
   level:
