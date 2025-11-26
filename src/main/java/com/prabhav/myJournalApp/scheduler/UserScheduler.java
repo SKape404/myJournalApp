@@ -4,9 +4,11 @@ import com.prabhav.myJournalApp.cache.AppCache;
 import com.prabhav.myJournalApp.entity.JournalEntry;
 import com.prabhav.myJournalApp.entity.User;
 import com.prabhav.myJournalApp.enums.Sentiment;
+import com.prabhav.myJournalApp.model.SentimentData;
 import com.prabhav.myJournalApp.repository.UserRepositoryImpl;
 import com.prabhav.myJournalApp.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -28,13 +30,16 @@ public class UserScheduler {
     @Autowired
     private AppCache appCache;
 
+    @Autowired
+    private KafkaTemplate<String, SentimentData> kafkaTemplate;
+
     //@Scheduled(cron = "0 0 9 * * SUN")
     public void fetchUsersAndSendSaMail() {
         List<User> userForSA = userRepository.getUserForSA();
 
         for(User user: userForSA) {
             List<JournalEntry> journalEntries = user.getJournalEntries();
-            List<Sentiment> sentiments = journalEntries.stream().filter(x -> x.getDate().isAfter(LocalDateTime.now().minus(7, ChronoUnit.DAYS))).map(x -> x.getSentiment()).toList();
+            List<Sentiment> sentiments = journalEntries.stream().filter(x -> x.getDate().isAfter(LocalDateTime.now().minus(10, ChronoUnit.DAYS))).map(x -> x.getSentiment()).toList();
             Map<Sentiment, Integer> sentimentCounts = new HashMap<>();
             for(Sentiment sentiment: sentiments) {
                 if(sentiment != null) {
@@ -52,7 +57,8 @@ public class UserScheduler {
             }
 
             if (mostFrequentSentiment != null) {
-                emailService.sendEmail(user.getEmail(), "Sentiment for last 7 days", mostFrequentSentiment.toString());
+                SentimentData sentimentData = SentimentData.builder().email(user.getEmail()).sentiment("Sentiment for last 7 days" + mostFrequentSentiment.toString()).build();
+                kafkaTemplate.send("weekly_sentiments", sentimentData.getEmail(), sentimentData);
             }
 
         }
