@@ -1,4 +1,6 @@
 spring:
+  redis:
+    url: redis://default:ybfsBR14tNyvvpqRwEbq4aFJkWARoO8F@redis-10104.c232.us-east-1-2.ec2.cloud.redislabs.com:10104
   data:
     mongodb:
       uri: mongodb+srv://prabhavsingh404_db_user:yRWpYaY8ScNyx0rU@cluster0.e9e7nz8.mongodb.net/?appName=Cluster0
